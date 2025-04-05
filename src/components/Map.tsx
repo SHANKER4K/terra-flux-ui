@@ -1,6 +1,6 @@
 
-import React from 'react';
-import { MapContainer, TileLayer, ZoomControl } from 'react-leaflet';
+import React, { useRef, useEffect } from 'react';
+import { MapContainer, TileLayer, ZoomControl, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Button } from "@/components/ui/button";
 import { RotateCw } from "lucide-react";
@@ -24,12 +24,36 @@ interface MapProps {
   className?: string;
 }
 
+// This is a separate component to handle map controls
+// that need access to the map instance
+const MapResetControl = () => {
+  const map = useMap();
+  
+  const resetView = () => {
+    map.setView([15, 30], 3);
+  };
+
+  return (
+    <div className="absolute bottom-4 right-4 z-10">
+      <Button 
+        variant="outline" 
+        size="icon" 
+        className="h-8 w-8 rounded-full bg-background/70 backdrop-blur-sm"
+        onClick={resetView}
+      >
+        <RotateCw className="h-4 w-4" />
+        <span className="sr-only">Reset map view</span>
+      </Button>
+    </div>
+  );
+};
+
 const Map = ({ className }: MapProps) => {
   const { toast } = useToast();
-  const mapCenter = [15, 30]; // Centered on Africa/Middle East region
+  const mapCenter: L.LatLngExpression = [15, 30]; // Centered on Africa/Middle East region
   const zoomLevel = 3;
 
-  React.useEffect(() => {
+  useEffect(() => {
     // Show toast when map loads
     toast({
       title: "Map loaded successfully",
@@ -40,33 +64,18 @@ const Map = ({ className }: MapProps) => {
   return (
     <div className={`relative w-full h-full ${className}`}>
       <MapContainer 
-        center={[mapCenter[0], mapCenter[1]] as L.LatLngExpression} 
-        zoom={zoomLevel} 
+        center={mapCenter}
+        zoom={zoomLevel}
         zoomControl={false}
         className="w-full h-full z-0"
-        attributionControl={true}
       >
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
         <ZoomControl position="topright" />
+        <MapResetControl />
       </MapContainer>
-
-      {/* Reset view button */}
-      <div className="absolute bottom-4 right-4 z-10">
-        <Button 
-          variant="outline" 
-          size="icon" 
-          className="h-8 w-8 rounded-full bg-background/70 backdrop-blur-sm"
-          onClick={() => {
-            // We would add reset view functionality here if we had access to the map instance
-          }}
-        >
-          <RotateCw className="h-4 w-4" />
-          <span className="sr-only">Reset map view</span>
-        </Button>
-      </div>
     </div>
   );
 };
