@@ -4,7 +4,7 @@ import { MapContainer, TileLayer, ZoomControl, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Button } from "@/components/ui/button";
 import { RotateCw } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 // Fix for default Leaflet marker icons
 import L from 'leaflet';
