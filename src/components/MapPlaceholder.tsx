@@ -1,5 +1,4 @@
 
-import { Globe } from "lucide-react";
 import Map from "./Map";
 
 export function MapPlaceholder() {
