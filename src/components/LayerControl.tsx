@@ -1,5 +1,5 @@
 
-import { Layers, Map, Mountain, Road, Droplet, Users } from "lucide-react";
+import { Layers, Map, Mountain, Route, Droplets, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { 
   Card,
@@ -24,8 +24,8 @@ export function LayerControl() {
   const [layers, setLayers] = useState<Layer[]>([
     { id: "base", name: "Base Map", icon: Map, active: true, color: "text-gray-600" },
     { id: "terrain", name: "Terrain", icon: Mountain, active: false, color: "text-emerald-600" },
-    { id: "roads", name: "Roads", icon: Road, active: true, color: "text-amber-600" },
-    { id: "water", name: "Water Bodies", icon: Droplet, active: true, color: "text-blue-600" },
+    { id: "roads", name: "Roads", icon: Route, active: true, color: "text-amber-600" },
+    { id: "water", name: "Water Bodies", icon: Droplets, active: true, color: "text-blue-600" },
     { id: "population", name: "Population", icon: Users, active: false, color: "text-violet-600" },
   ]);
 
