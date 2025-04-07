@@ -1,10 +1,17 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, ZoomControl, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Button } from "@/components/ui/button";
 import { RotateCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // Fix for default Leaflet marker icons
 import L from 'leaflet';
@@ -22,36 +29,77 @@ L.Icon.Default.mergeOptions({
 
 interface MapProps {
   className?: string;
+  center?: L.LatLngExpression;
+  zoom?: number;
 }
+
+// Available base layers
+export const baseLayers = {
+  "OpenStreetMap": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+  "GSI Standard": "https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png",
+  "GSI Pale": "https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png",
+  "GSI English": "https://cyberjapandata.gsi.go.jp/xyz/english/{z}/{x}/{y}.png",
+  "GSI Satellite": "https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg"
+};
+
+// Attribution for base layers
+const attributions = {
+  "OpenStreetMap": '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  "GSI Standard": '&copy; <a href="https://maps.gsi.go.jp/development/ichiran.html">GSI Japan</a>',
+  "GSI Pale": '&copy; <a href="https://maps.gsi.go.jp/development/ichiran.html">GSI Japan</a>',
+  "GSI English": '&copy; <a href="https://maps.gsi.go.jp/development/ichiran.html">GSI Japan</a>',
+  "GSI Satellite": '&copy; <a href="https://maps.gsi.go.jp/development/ichiran.html">GSI Japan</a>'
+};
 
 // This is a separate component to handle map controls
 // that need access to the map instance
-const MapResetControl = () => {
+const MapControls = () => {
   const map = useMap();
+  const [baseLayer, setBaseLayer] = useState<keyof typeof baseLayers>("OpenStreetMap");
   
   const resetView = () => {
-    map.setView([15, 30], 3);
+    map.setView([35.7, 139.7], 10);
+  };
+
+  const handleLayerChange = (value: string) => {
+    setBaseLayer(value as keyof typeof baseLayers);
   };
 
   return (
-    <div className="absolute bottom-4 right-4 z-10">
-      <Button 
-        variant="outline" 
-        size="icon" 
-        className="h-8 w-8 rounded-full bg-background/70 backdrop-blur-sm"
-        onClick={resetView}
-      >
-        <RotateCw className="h-4 w-4" />
-        <span className="sr-only">Reset map view</span>
-      </Button>
-    </div>
+    <>
+      {/* Layer Control */}
+      <div className="absolute top-4 left-4 z-10 glass-panel p-3 rounded-lg">
+        <Select value={baseLayer} onValueChange={handleLayerChange}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Select base layer" />
+          </SelectTrigger>
+          <SelectContent>
+            {Object.keys(baseLayers).map((layer) => (
+              <SelectItem key={layer} value={layer}>{layer}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      
+      {/* Reset View Button */}
+      <div className="absolute bottom-4 right-4 z-10">
+        <Button 
+          variant="outline" 
+          size="icon" 
+          className="h-8 w-8 rounded-full bg-background/70 backdrop-blur-sm"
+          onClick={resetView}
+        >
+          <RotateCw className="h-4 w-4" />
+          <span className="sr-only">Reset map view</span>
+        </Button>
+      </div>
+    </>
   );
 };
 
-const Map = ({ className }: MapProps) => {
+const Map = ({ className, center = [35.7, 139.7], zoom = 10 }: MapProps) => {
   const { toast } = useToast();
-  const mapCenter: L.LatLngExpression = [15, 30]; // Centered on Africa/Middle East region
-  const zoomLevel = 3;
+  const [activeLayer, setActiveLayer] = useState<keyof typeof baseLayers>("OpenStreetMap");
 
   useEffect(() => {
     // Show toast when map loads
@@ -64,17 +112,17 @@ const Map = ({ className }: MapProps) => {
   return (
     <div className={`relative w-full h-full ${className}`}>
       <MapContainer 
-        center={mapCenter}
-        zoom={zoomLevel}
+        center={center}
+        zoom={zoom}
         zoomControl={false}
         className="w-full h-full z-0"
       >
         <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url={baseLayers[activeLayer]}
+          attribution={attributions[activeLayer]}
         />
         <ZoomControl position="topright" />
-        <MapResetControl />
+        <MapControls />
       </MapContainer>
     </div>
   );

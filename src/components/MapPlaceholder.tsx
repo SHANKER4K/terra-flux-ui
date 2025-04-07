@@ -1,7 +1,9 @@
 
-import Map from "./Map";
+import React from 'react';
+import MapHolder from './MapHolder';
 
 export function MapPlaceholder() {
-  // Return the Map component directly
-  return <Map className="w-full h-full" />;
+  return (
+    <MapHolder layout="single" />
+  );
 }
