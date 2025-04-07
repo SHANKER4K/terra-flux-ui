@@ -5,7 +5,9 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "./ThemeToggle";
 import { SearchBar } from "./SearchBar";
+import { MapPlaceholder } from "./MapPlaceholder";
 import { LayerControl } from "./LayerControl";
+import { MapControls } from "./MapControls";
 import { DataPanel } from "./DataPanel";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -78,65 +80,9 @@ export function DashboardLayout() {
         
         {/* Main Content */}
         <main className="flex-1 flex flex-col h-full relative overflow-hidden">
-          {/* Content Area - Replaced Map with Welcome Screen */}
-          <div className="relative flex-1 flex items-center justify-center p-6">
-            <div className="text-center max-w-2xl">
-              <div className="bg-primary/10 mx-auto rounded-full w-24 h-24 flex items-center justify-center mb-6">
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  viewBox="0 0 24 24"
-                  className="h-12 w-12 text-primary"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
-                  <path d="M2 12h20" />
-                </svg>
-              </div>
-              <h2 className="text-3xl font-bold tracking-tight mb-2">Welcome to TerraFlux GIS</h2>
-              <p className="text-muted-foreground mb-6">
-                Your geospatial data visualization and analysis platform
-              </p>
-              <div className="flex flex-wrap gap-4 justify-center">
-                <Button className="gap-2">
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    viewBox="0 0 24 24"
-                    className="h-5 w-5"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
-                    <polyline points="14 2 14 8 20 8" />
-                  </svg>
-                  Import Data
-                </Button>
-                <Button variant="outline" className="gap-2">
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    viewBox="0 0 24 24"
-                    className="h-5 w-5"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                    <polyline points="7 10 12 15 17 10" />
-                    <line x1="12" y1="15" x2="12" y2="3" />
-                  </svg>
-                  Download Templates
-                </Button>
-              </div>
-            </div>
+          {/* Map Area */}
+          <div className="relative flex-1 map-container">
+            <MapPlaceholder />
             
             {/* Floating sidebar toggle */}
             <div className="absolute left-4 top-4 z-10">
@@ -148,6 +94,27 @@ export function DashboardLayout() {
               >
                 {sidebarOpen ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                 <span className="sr-only">Toggle sidebar</span>
+              </Button>
+            </div>
+            
+            {/* Map Controls - Right side */}
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 z-10">
+              <MapControls />
+            </div>
+            
+            {/* Data Panel Toggle - Bottom */}
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setDataPanelOpen(!dataPanelOpen)}
+                className="rounded-full bg-background/70 backdrop-blur-sm"
+              >
+                {dataPanelOpen ? "Hide Data Panel" : "Show Data Panel"}
+                <ChevronUp className={cn(
+                  "h-4 w-4 ml-2 transition-transform",
+                  dataPanelOpen ? "rotate-180" : ""
+                )} />
               </Button>
             </div>
           </div>

@@ -57,7 +57,7 @@ const Map = ({ className }: MapProps) => {
     // Show toast when map loads
     toast({
       title: "Map loaded successfully",
-      description: "The Stamen Terrain map is now ready to use",
+      description: "The map is now ready to use",
     });
   }, [toast]);
 
@@ -70,8 +70,8 @@ const Map = ({ className }: MapProps) => {
         className="w-full h-full z-0"
       >
         <TileLayer
-          url="https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.png"
-          attribution='Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
         <ZoomControl position="topright" />
         <MapResetControl />
