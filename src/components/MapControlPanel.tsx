@@ -3,9 +3,9 @@ import React from 'react';
 import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { 
-  Layouts, 
+  Layout, 
   LayoutGrid, 
-  LayoutSidebar, 
+  PanelLeft, 
   MapPin, 
   Compass, 
   Ruler, 
@@ -34,10 +34,10 @@ export function MapControlPanel({ layout, onLayoutChange }: MapControlPanelProps
       
       <ToggleGroup type="single" value={layout} onValueChange={(value) => value && onLayoutChange(value as any)}>
         <ToggleGroupItem value="single" aria-label="Single map">
-          <Layouts className="h-4 w-4" />
+          <Layout className="h-4 w-4" />
         </ToggleGroupItem>
         <ToggleGroupItem value="side-by-side" aria-label="Side by side maps">
-          <LayoutSidebar className="h-4 w-4" />
+          <PanelLeft className="h-4 w-4" />
         </ToggleGroupItem>
         <ToggleGroupItem value="grid" aria-label="Grid layout">
           <LayoutGrid className="h-4 w-4" />

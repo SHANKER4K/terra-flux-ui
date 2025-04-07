@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import MapHolder from './MapHolder';
 
 export function MapPlaceholder() {
@@ -7,3 +7,5 @@ export function MapPlaceholder() {
     <MapHolder layout="single" />
   );
 }
+
+export default MapPlaceholder;

@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, ZoomControl, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, ZoomControl } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Button } from "@/components/ui/button";
 import { RotateCw } from "lucide-react";
@@ -52,54 +52,67 @@ const attributions = {
 };
 
 // This is a separate component to handle map controls
-// that need access to the map instance
-const MapControls = () => {
-  const map = useMap();
+function MapControls() {
   const [baseLayer, setBaseLayer] = useState<keyof typeof baseLayers>("OpenStreetMap");
   
-  const resetView = () => {
-    map.setView([35.7, 139.7], 10);
-  };
+  // Create the map reference properly using useMap hook inside the component
+  function MapControlWithMap() {
+    const map = React.useContext(MapContainer.context);
+    
+    const resetView = () => {
+      if (map) {
+        map.setView([35.7, 139.7], 10);
+      }
+    };
 
-  const handleLayerChange = (value: string) => {
-    setBaseLayer(value as keyof typeof baseLayers);
-  };
+    return (
+      <>
+        {/* Layer Control */}
+        <div className="absolute top-4 left-4 z-10 glass-panel p-3 rounded-lg">
+          <Select 
+            value={baseLayer} 
+            onValueChange={(value) => setBaseLayer(value as keyof typeof baseLayers)}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select base layer" />
+            </SelectTrigger>
+            <SelectContent>
+              {Object.keys(baseLayers).map((layer) => (
+                <SelectItem key={layer} value={layer}>{layer}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        
+        {/* Reset View Button */}
+        <div className="absolute bottom-4 right-4 z-10">
+          <Button 
+            variant="outline" 
+            size="icon" 
+            className="h-8 w-8 rounded-full bg-background/70 backdrop-blur-sm"
+            onClick={resetView}
+          >
+            <RotateCw className="h-4 w-4" />
+            <span className="sr-only">Reset map view</span>
+          </Button>
+        </div>
+      </>
+    );
+  }
 
   return (
-    <>
-      {/* Layer Control */}
-      <div className="absolute top-4 left-4 z-10 glass-panel p-3 rounded-lg">
-        <Select value={baseLayer} onValueChange={handleLayerChange}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select base layer" />
-          </SelectTrigger>
-          <SelectContent>
-            {Object.keys(baseLayers).map((layer) => (
-              <SelectItem key={layer} value={layer}>{layer}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      
-      {/* Reset View Button */}
-      <div className="absolute bottom-4 right-4 z-10">
-        <Button 
-          variant="outline" 
-          size="icon" 
-          className="h-8 w-8 rounded-full bg-background/70 backdrop-blur-sm"
-          onClick={resetView}
-        >
-          <RotateCw className="h-4 w-4" />
-          <span className="sr-only">Reset map view</span>
-        </Button>
-      </div>
-    </>
+    <div>
+      <MapControlWithMap />
+      <TileLayer
+        url={baseLayers[baseLayer]}
+        attribution={attributions[baseLayer]}
+      />
+    </div>
   );
-};
+}
 
 const Map = ({ className, center = [35.7, 139.7], zoom = 10 }: MapProps) => {
   const { toast } = useToast();
-  const [activeLayer, setActiveLayer] = useState<keyof typeof baseLayers>("OpenStreetMap");
 
   useEffect(() => {
     // Show toast when map loads
@@ -117,10 +130,6 @@ const Map = ({ className, center = [35.7, 139.7], zoom = 10 }: MapProps) => {
         zoomControl={false}
         className="w-full h-full z-0"
       >
-        <TileLayer
-          url={baseLayers[activeLayer]}
-          attribution={attributions[activeLayer]}
-        />
         <ZoomControl position="topright" />
         <MapControls />
       </MapContainer>
