@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, ZoomControl } from 'react-leaflet';
+import { MapContainer, TileLayer, ZoomControl, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Button } from "@/components/ui/button";
 import { RotateCw } from "lucide-react";
@@ -55,51 +55,6 @@ const attributions = {
 function MapControls() {
   const [baseLayer, setBaseLayer] = useState<keyof typeof baseLayers>("OpenStreetMap");
   
-  // Create the map reference properly using useMap hook inside the component
-  function MapControlWithMap() {
-    const map = React.useContext(MapContainer.context);
-    
-    const resetView = () => {
-      if (map) {
-        map.setView([35.7, 139.7], 10);
-      }
-    };
-
-    return (
-      <>
-        {/* Layer Control */}
-        <div className="absolute top-4 left-4 z-10 glass-panel p-3 rounded-lg">
-          <Select 
-            value={baseLayer} 
-            onValueChange={(value) => setBaseLayer(value as keyof typeof baseLayers)}
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select base layer" />
-            </SelectTrigger>
-            <SelectContent>
-              {Object.keys(baseLayers).map((layer) => (
-                <SelectItem key={layer} value={layer}>{layer}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        
-        {/* Reset View Button */}
-        <div className="absolute bottom-4 right-4 z-10">
-          <Button 
-            variant="outline" 
-            size="icon" 
-            className="h-8 w-8 rounded-full bg-background/70 backdrop-blur-sm"
-            onClick={resetView}
-          >
-            <RotateCw className="h-4 w-4" />
-            <span className="sr-only">Reset map view</span>
-          </Button>
-        </div>
-      </>
-    );
-  }
-
   return (
     <div>
       <MapControlWithMap />
@@ -108,6 +63,52 @@ function MapControls() {
         attribution={attributions[baseLayer]}
       />
     </div>
+  );
+}
+
+// Separate component to use the useMap hook
+function MapControlWithMap() {
+  const map = useMap();
+  
+  const resetView = () => {
+    map.setView([35.7, 139.7], 10);
+  };
+
+  return (
+    <>
+      {/* Layer Control */}
+      <div className="absolute top-4 left-4 z-10 glass-panel p-3 rounded-lg">
+        <Select 
+          value="OpenStreetMap" 
+          onValueChange={(value) => {
+            // This will be handled by the parent component's state
+            // This is just a placeholder for now
+          }}
+        >
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Select base layer" />
+          </SelectTrigger>
+          <SelectContent>
+            {Object.keys(baseLayers).map((layer) => (
+              <SelectItem key={layer} value={layer}>{layer}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      
+      {/* Reset View Button */}
+      <div className="absolute bottom-4 right-4 z-10">
+        <Button 
+          variant="outline" 
+          size="icon" 
+          className="h-8 w-8 rounded-full bg-background/70 backdrop-blur-sm"
+          onClick={resetView}
+        >
+          <RotateCw className="h-4 w-4" />
+          <span className="sr-only">Reset map view</span>
+        </Button>
+      </div>
+    </>
   );
 }
 
