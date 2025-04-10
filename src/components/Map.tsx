@@ -51,21 +51,6 @@ const attributions = {
   "GSI Satellite": '&copy; <a href="https://maps.gsi.go.jp/development/ichiran.html">GSI Japan</a>'
 };
 
-// This is a separate component to handle map controls
-function MapControls() {
-  const [baseLayer, setBaseLayer] = useState<keyof typeof baseLayers>("OpenStreetMap");
-  
-  return (
-    <div>
-      <MapControlWithMap />
-      <TileLayer
-        url={baseLayers[baseLayer]}
-        attribution={attributions[baseLayer]}
-      />
-    </div>
-  );
-}
-
 // Separate component to use the useMap hook
 function MapControlWithMap() {
   const map = useMap();
@@ -109,6 +94,21 @@ function MapControlWithMap() {
         </Button>
       </div>
     </>
+  );
+}
+
+// This is a separate component for map controls inside the MapContainer
+function MapControls() {
+  const [baseLayer, setBaseLayer] = useState<keyof typeof baseLayers>("OpenStreetMap");
+  
+  return (
+    <div>
+      <MapControlWithMap />
+      <TileLayer
+        url={baseLayers[baseLayer]}
+        attribution={attributions[baseLayer]}
+      />
+    </div>
   );
 }
 
